@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Kings Cup</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"  type="text/css" href="client/MyStyles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+    body {font-family: "Lato", sans-serif}
+    .mySlides {display: none}
+    </style>
+    <body>
+  
+    <!-- Page content -->
+    <div class="w3-content" style="max-width:2000px;margin-top:46px">
+    
+    
+
+      <!-- The Services Section -->
+      <div class="w3-green" >
+        <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="Main">
+          <h2 class="w3-wide w3-center">Welcome to Kings Cup</h2>
+          <p class="w3-opacity w3-center" id="Enter"><i>Enter Player name</i></p><br>
+            
+           <input  type = "text"
+                    id = "myText"
+                   value = "text here" />
+
+<!-- <button onclick="connectMe()">Connect to Game!</button> -->
+            <button class="w3-button w3-black w3-margin-bottom" id="btn1" onclick="connectMe()">Connect to Game!</button>  
+            <div class="w3-row-padding w3-padding-32" style="margin:0 -16px" id="Table">
+                <div class="w3-row-padding w3-padding-32" style="margin:0 -16px">
+                    <div class="w3-col s3 w3-margin-bottom">
+                      <img src="client/Assets/JPEG/purple_back.jpg" alt="Card1" style="width:100%" class="w3-hover-opacity" id="CurrCard">
+                      <div class="w3-container w3-white" id=Play1>
+                        <p class="w3-opacity" id=Name1>Player 1</p>
+                        <p id=Desc1>Description Here</p>
+                      </div>
+                    </div>
+                   
+            
+            
+
+            </div>
+
+          
+            <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(1)" disabled=true id=btnCan>Gently Place in Can</button>
+            <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(2)" disabled=true id=btnCan2>Place in Can</button>
+            <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(3)" disabled=true id=btnCan3>Agressively Place in Can</button>
+            <button class="w3-button w3-black w3-margin-bottom" onclick="drawCard()" disabled=true id=btnDraw>Draw Card</button>
+          </div>
+        </div>
+      </div>
+      
+    <!-- End Page Content -->
+    </div>
+
+
+<script src = "https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+    var counter = -1;
+    var playerId = 0;
+    var socket = io();
+    var status = 0;
+    var hand = 0;
+    var pass =0;
+    var txtName;
+
+    socket.on('SockInfo', function(dataVar){
+        playerId = dataVar.data;
+    });
+    // end of init---------------------------
+
+
+    var connectMe = function(){
+        txtName =   document.getElementById("myText");
+        socket.emit('connectMe',{name:txtName.value, id:playerId });
+        counter++;
+    }
+
+    
+    function Pass_Call(stackCount){
+      element = document.getElementById("btnCan");
+      element.disabled = true; 
+      element = document.getElementById("btnCan2");
+      element.disabled = true;
+      element = document.getElementById("btnCan3");
+      element.disabled = true; 
+      element = document.getElementById("btnDraw");
+      element.disabled = true; 
+
+      socket.emit('call',{call:1 , count:stackCount , name:txtName.value });
+
+        
+    }
+
+    function drawCard(){
+      element = document.getElementById("btnDraw");
+      element.disabled = true; 
+
+
+      element = document.getElementById("btnCan");
+           element.disabled = false;
+           element = document.getElementById("btnCan2");
+           element.disabled = false;
+           element = document.getElementById("btnCan3");
+           element.disabled = false;
+
+      socket.emit('draw',{data:1 });
+
+        
+    }
+
+
+
+
+
+
+    socket.on('Start', function(dataVar){
+        if (counter == 0 ){
+            //Remove Header and text box--------------------
+            var elmnt = document.getElementById("myText");
+            elmnt.remove();
+            elmnt = document.getElementById("Enter");
+            elmnt.remove();
+            elmnt = document.getElementById("btn1");
+            elmnt.remove();
+            //----------------------------------------------  
+
+
+
+            var para = document.createElement("p");
+            var node = document.createTextNode( "Welcome "+dataVar.name + " Waiting on players to join");
+            node.id="Welcome";
+            para.appendChild(node);
+
+            var element = document.getElementById("Main");
+            element.appendChild(para);
+
+            var elmnt = document.getElementById("myText");
+            elmnt.innerHTML = " Waiting on players to join";
+
+ 
+            
+
+            counter++;
+
+
+        }
+
+    });
+
+
+    socket.on('UpdateCard', function(dataVar){
+
+      
+
+
+        var element;
+        element = document.getElementById("CurrCard");
+        element.src = dataVar.data;  
+
+        element = document.getElementById("Name1");
+        element.innerHTML = dataVar.card.name;  
+
+
+         
+        
+            //----------Update Card------------------------
+            
+ 
+
+            //-----------------------------------------------
+
+
+           
+            //Increment 
+         
+     
+        
+    });
+
+    socket.on('Pass_Call', function(dataVar){
+        if (dataVar.data == 0){
+
+
+           element = document.getElementById("btnDraw");
+           element.disabled = false;
+
+            var para = document.createElement("p");
+            var node = document.createTextNode("Your TURN!!!" );
+            para.appendChild(node);
+            var element = document.getElementById("Main");
+            element.appendChild(para);
+            pass ++;
+
+        }
+     
+    });
+
+
+
+    
+    socket.on('Loser', function(dataVar){
+        
+        var element;
+        element = document.getElementById("CurrCard");
+        element.src = "client/Assets/JPEG/Red_back.jpg"  ;  
+
+        element = document.getElementById("Name1");
+        element.innerHTML = "Loser is: "+ dataVar.name;  
+
+        
+     
+    });
+
+</script>
