@@ -9,7 +9,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <style>
-    body {font-family: "Lato", sans-serif}
+    body {font-family: "Lato", sans-serif;
+    background-image: url("client/Assets/table.png");}
     .mySlides {display: none}
     </style>
     <body>
@@ -20,28 +21,33 @@
     
 
       <!-- The Services Section -->
-      <div class="w3-green" >
-        <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="Main">
+      <div  id="colour" >
+        <div class="w3-container w3-content w3-padding-64 w3-center" style="max-width:800px" id="Main">
           <h2 class="w3-wide w3-center">Welcome to Kings Cup</h2>
           <p class="w3-opacity w3-center" id="Enter"><i>Enter Player name</i></p><br>
             
            <input  type = "text"
                     id = "myText"
-                   value = "text here" />
+                   value = "" class="w3-center" />
 
 <!-- <button onclick="connectMe()">Connect to Game!</button> -->
             <button class="w3-button w3-black w3-margin-bottom" id="btn1" onclick="connectMe()">Connect to Game!</button>  
-            <div class="w3-row-padding w3-padding-32" style="margin:0 -16px" id="Table">
+            <div class="w3-row-padding w3-padding-32 w3-center" style="margin:0 -16px" id="Table">
+              <button class="w3-button w3-black w3-margin-bottom" onclick="drawCard()" disabled=true id=btnDraw>Draw Card</button>
                 <div class="w3-row-padding w3-padding-32" style="margin:0 -16px">
-                    <div class="w3-col s3 w3-margin-bottom">
-                      <img src="client/Assets/JPEG/purple_back.jpg" alt="Card1" style="width:100%" class="w3-hover-opacity" id="CurrCard">
-                      <div class="w3-container w3-white" id=Play1>
+                    
+                  <div class="w3-center w3-margin-bottom">
+                     
+                      <img src="client/Assets/JPEG/purple_back.jpg" alt="Card1" style="width:30%" class="w3-hover-opacity" id="CurrCard">
+                      <div class="w3-container w3-transparent" id=Play1>
                         <p class="w3-opacity" id=Name1>Player 1</p>
                         <p id=Desc1>Description Here</p>
                       </div>
+                      <img src="client/Assets/beer.png" alt="Card1" style="width:1%" class="w3-transparent" id="Can">
                     </div>
-                   
-            
+                    
+                    
+                    <button class="w3-button w3-black w3-margin-bottom" onclick="drawCard()" disabled=true id=btnDraw1>Draw Card</button>
             
 
             </div>
@@ -50,7 +56,7 @@
             <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(1)" disabled=true id=btnCan>Gently Place in Can</button>
             <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(2)" disabled=true id=btnCan2>Place in Can</button>
             <button class="w3-button w3-black w3-margin-bottom" onclick="Pass_Call(3)" disabled=true id=btnCan3>Agressively Place in Can</button>
-            <button class="w3-button w3-black w3-margin-bottom" onclick="drawCard()" disabled=true id=btnDraw>Draw Card</button>
+           
           </div>
         </div>
       </div>
@@ -91,6 +97,8 @@
       element.disabled = true; 
       element = document.getElementById("btnDraw");
       element.disabled = true; 
+      element = document.getElementById("btnDraw1");
+      element.disabled = true; 
 
       socket.emit('call',{call:1 , count:stackCount , name:txtName.value });
 
@@ -100,6 +108,8 @@
     function drawCard(){
       element = document.getElementById("btnDraw");
       element.disabled = true; 
+      element = document.getElementById("btnDraw1");
+      element.disabled = true;
 
 
       element = document.getElementById("btnCan");
@@ -129,7 +139,7 @@
             elmnt = document.getElementById("btn1");
             elmnt.remove();
             //----------------------------------------------  
-
+        
 
 
             var para = document.createElement("p");
@@ -157,21 +167,29 @@
     socket.on('UpdateCard', function(dataVar){
 
       
+      var element;
+            element = document.getElementById("CurrCard");
+            element.src = dataVar.data;  
+    
+            element = document.getElementById("Name1");
+            element.innerHTML = dataVar.card;  
+    
+            
+            element = document.getElementById("Desc1");
+            element.innerHTML = dataVar.desc;  
 
-
-        var element;
-        element = document.getElementById("CurrCard");
-        element.src = dataVar.data;  
-
-        element = document.getElementById("Name1");
-        element.innerHTML = dataVar.card.name;  
-
-
-         
         
             //----------Update Card------------------------
-            
- 
+            if (dataVar.count == 1 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
+            {
+              element = document.getElementById("CurrCard");
+            element.src = "client/Assets/JPEG/Yellow_back.jpg";  
+            }
+            if (dataVar.count == 2 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
+            {
+              element = document.getElementById("CurrCard");
+            element.src = "client/Assets/JPEG/Red_back.jpg";  
+            }
 
             //-----------------------------------------------
 
@@ -189,12 +207,10 @@
 
            element = document.getElementById("btnDraw");
            element.disabled = false;
+           element = document.getElementById("btnDraw1");
+           element.disabled = false;
 
-            var para = document.createElement("p");
-            var node = document.createTextNode("Your TURN!!!" );
-            para.appendChild(node);
-            var element = document.getElementById("Main");
-            element.appendChild(para);
+
             pass ++;
 
         }
@@ -208,7 +224,7 @@
         
         var element;
         element = document.getElementById("CurrCard");
-        element.src = "client/Assets/JPEG/Red_back.jpg"  ;  
+        element.src = "client/Assets/JPEG/Gray_back.jpg"  ;  
 
         element = document.getElementById("Name1");
         element.innerHTML = "Loser is: "+ dataVar.name;  
