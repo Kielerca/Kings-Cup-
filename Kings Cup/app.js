@@ -21,6 +21,8 @@ var playerArray;
 var playerObj;
 var cardStackCount = 0;
 var currIndex = 0;
+var UpdateTurnFlag =1;
+var WhosTurn = 0;
 
 playerArray = [];
 cardArray = [];
@@ -201,6 +203,10 @@ function evaluateLoss(name)
     {
         closeToPop = 1;
     }
+    if ((cardStackCount + 15) >= LossCount)
+    {
+        closeToPop = 15;
+    }
     if ((cardStackCount + 10) >= LossCount)
     {
         closeToPop = 2;
@@ -269,6 +275,7 @@ io.sockets.on('connection',function(socket){
         console.log("IN CALL" + cardStackCount);
         evaluateLoss( call.name);
         newCardFlag = 0;
+        UpdateTurnFlag = 1;
     });
 
 
@@ -292,9 +299,11 @@ setInterval(function(){
             socket.emit('Start',{name:socket.player.id});
         }
 
-        if (socket.player.isTurn){
-            //console.log("PLAYER 's turn " + socket.player.id ) ;
+        if (socket.player.isTurn && UpdateTurnFlag){
+            WhosTurn = socket.player.id;
             socket.emit('Pass_Call',{data:0});
+            UpdateTurnFlag = 0;
+            
         }
         
 
@@ -317,11 +326,11 @@ setInterval(function(){
             //console.log("Updating Card with the " + deck[currIndex].name + deck[currIndex].value  ) ;
             if (newCardFlag)
             {
-                socket.emit('UpdateCard',{data:deck[currIndex].image, card:deck[currIndex].name,desc:deck[currIndex].value, count:closeToPop });
+                socket.emit('UpdateCard',{data:deck[currIndex].image, card:deck[currIndex].name,desc:deck[currIndex].value, count:closeToPop, turn:WhosTurn });
             }
             if (newCardFlag == 0)
             {
-                socket.emit('UpdateCard',{data:"client/Assets/JPEG/Green_back.jpg", card:"?????", desc:"?????", count:closeToPop});
+                socket.emit('UpdateCard',{data:"client/Assets/JPEG/Green_back.jpg", card:"?????", desc:"?????", count:closeToPop, turn:WhosTurn});
             }
 
         }
