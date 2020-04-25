@@ -79,6 +79,7 @@
     var txtName;
     var playerName;
     var circleBrokeFlag = 0;
+    var EndofGameFlag = 0;
 
     socket.on('SockInfo', function(dataVar){
         playerId = dataVar.data;
@@ -171,53 +172,68 @@
 
     socket.on('UpdateCard', function(dataVar){
 
-           //------ Update image and desc--------------------
-            var element;
-            element = document.getElementById("CurrCard");
-            element.src = dataVar.data;  
-    
-            element = document.getElementById("Name1");
-            element.innerHTML = dataVar.card;  
-    
-            
-            element = document.getElementById("Desc1");
-            element.innerHTML = dataVar.desc;  
-          //---------------------------------------------
-            
-            //-----------------Update Turn Name------------------------------
-            if (playerName == dataVar.turn)
-            {
-              element = document.getElementById("Turn");
-              element.innerHTML = "Your Turn " + dataVar.turn ;  
-            }
-            else
-            {
-              element = document.getElementById("Turn");
-              element.innerHTML = dataVar.turn + "'s Turn";  
+      
+      var element;
+      element = document.getElementById("CurrCard");
 
-            }
-           //-----------------------------------------------------------------
-           
+      if (element.src == "client/Assets/JPEG/Gray_back.jpg" || EndofGameFlag)
+      {
+        return;
+      }
+
+
+        //-------------------------------------------------------------------
+        //------ Update image and desc--------------------
         
-            //----------Update back of Card----or circle broke --------------------
-            if (dataVar.count == 1 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
-            {
-              element = document.getElementById("CurrCard");
-              element.src = "client/Assets/JPEG/Yellow_back.jpg";  
-            }
-            if (dataVar.count == 2 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
-            {
-              element = document.getElementById("CurrCard");
-              element.src = "client/Assets/JPEG/Red_back.jpg";  
-            }
-            if (dataVar.count == 15 && (!circleBrokeFlag))
-            {
-              element = document.getElementById("Turn");
-              element.innerHTML =  dataVar.turn  + " Just Broke the Circle!" ;
-              circleBrokeFlag = 1;    
-            }
+   
 
-            //-------------------------------------------------------------------
+        element = document.getElementById("Name1");
+        element.innerHTML = dataVar.card;  
+
+        
+        element = document.getElementById("Desc1");
+        element.innerHTML = dataVar.desc;  
+      //---------------------------------------------
+            
+      //-----------------Update Turn Name------------------------------
+      if (playerName == dataVar.turn)
+      {
+        element = document.getElementById("Turn");
+        element.innerHTML = "Your Turn " + dataVar.turn ;  
+      }
+      else
+      {
+        element = document.getElementById("Turn");
+        element.innerHTML = dataVar.turn + "'s Turn";  
+
+      }
+      //-----------------------------------------------------------------
+      
+       //----------Update back of Card----or circle broke --------------------
+       if (dataVar.count == 1 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
+        {
+          element = document.getElementById("CurrCard");
+          element.src = "client/Assets/JPEG/Yellow_back.jpg";  
+        }
+        else if (dataVar.count == 2 && (dataVar.data == "client/Assets/JPEG/Green_back.jpg"))
+        {
+          element = document.getElementById("CurrCard");
+          element.src = "client/Assets/JPEG/Red_back.jpg";  
+        }
+        else if (dataVar.count == 15 && (!circleBrokeFlag))
+        {
+          element = document.getElementById("Turn");
+          element.innerHTML =  dataVar.turn  + " Just Broke the Circle!" ;
+          alert(dataVar.turn  + " Just Broke the Circle!");
+          circleBrokeFlag = 1; 
+        }
+        else
+        {
+          element = document.getElementById("CurrCard");
+          element.src = dataVar.data;  
+        }
+        
+           
          
      
         
@@ -244,37 +260,39 @@
     
     socket.on('Loser', function(dataVar){
         
-        var element;
-        element = document.getElementById("CurrCard");
-        element.src = "client/Assets/JPEG/Gray_back.jpg"  ;  
+      EndofGameFlag = 1;
 
-        element = document.getElementById("Name1");
-        element.innerHTML = "Loser is: "+ dataVar.name;  
+      var element;
+      element = document.getElementById("CurrCard");
+      element.src = "client/Assets/JPEG/Gray_back.jpg"  ;  
 
-
-        element = document.getElementById("btnDraw");
-        element.disabled = true; 
-        element = document.getElementById("btnDraw1");
-        element.disabled = true;
+      element = document.getElementById("Name1");
+      element.innerHTML = "Loser is: "+ dataVar.name;  
 
 
-        element = document.getElementById("btnCan");
-        element.disabled = true;
-        element = document.getElementById("btnCan2");
-        element.disabled = true;
-        element = document.getElementById("btnCan3");
-        element.disabled = true;
+      element = document.getElementById("btnDraw");
+      element.disabled = true; 
+      element = document.getElementById("btnDraw1");
+      element.disabled = true;
 
-        if (playerName == dataVar.name)
-        {
-          element = document.getElementById("Turn");
-          element.innerHTML = "You LOST! " + dataVar.name ;  
-        }
-        else
-        {
-          element = document.getElementById("Turn");
-          element.innerHTML =  dataVar.name + " LOST! " ;  
-        }
+
+      element = document.getElementById("btnCan");
+      element.disabled = true;
+      element = document.getElementById("btnCan2");
+      element.disabled = true;
+      element = document.getElementById("btnCan3");
+      element.disabled = true;
+
+      if (playerName == dataVar.name)
+      {
+        element = document.getElementById("Turn");
+        element.innerHTML = "You LOST! " + dataVar.name ;  
+      }
+      else
+      {
+        element = document.getElementById("Turn");
+        element.innerHTML =  dataVar.name + " LOST! " ;  
+      }
     
      
     });

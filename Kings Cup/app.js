@@ -32,6 +32,7 @@ var LossCount = 52;
 var isGameOver = 0;
 var Loser = "";
 var closeToPop = 0;
+var circleBroke = 0;
 
 class Player {
     constructor(id) {
@@ -193,24 +194,29 @@ function assignTurn(players)
 
 function evaluateLoss(name)
 {   
-    if (cardStackCount >=LossCount)
+    if (cardStackCount >= LossCount)
     {
         isGameOver = 1;
         Loser = name;
         newCardFlag = -1;
     }
+    if ((cardStackCount + 10) >= LossCount)
+    {
+        closeToPop = 2;
+        return;
+    }
     if ((cardStackCount + 20) >= LossCount)
     {
         closeToPop = 1;
     }
-    if ((cardStackCount + 15) >= LossCount)
+
+    if (((cardStackCount + 15) >= LossCount) && (!circleBroke))
     {
         closeToPop = 15;
+        circleBroke = 1;
+        console.log('Circle Broke');
     }
-    if ((cardStackCount + 10) >= LossCount)
-    {
-        closeToPop = 2;
-    }
+
 }
 
 
@@ -253,7 +259,6 @@ io.sockets.on('connection',function(socket){
           
         if (call.call){
             currIndex = (currIndex + 1) % 52;
-            console.log("IN CALL" + currIndex);
           
             var index = 0;
             for (var j in playerArray)
@@ -272,7 +277,7 @@ io.sockets.on('connection',function(socket){
         }
         
         cardStackCount += call.count;
-        console.log("IN CALL" + cardStackCount);
+        console.log("Card Count" + cardStackCount);
         evaluateLoss( call.name);
         newCardFlag = 0;
         UpdateTurnFlag = 1;
