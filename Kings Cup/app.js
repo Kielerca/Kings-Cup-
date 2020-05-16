@@ -23,6 +23,7 @@ var cardStackCount = 0;
 var currIndex = 0;
 var UpdateTurnFlag =1;
 var WhosTurn = 0;
+var circleBreaker = "";
 
 playerArray = [];
 cardArray = [];
@@ -79,8 +80,8 @@ function cardSetup(){
     //CLUBS
     cardArray[13] = new Card("Ace of Clubs"  ,"client/Assets/JPEG/AC.jpg",2, "Waterfall");
     cardArray[14] = new Card("King of Clubs" ,"client/Assets/JPEG/KC.jpg",2, "Make a Rule");
-    cardArray[15] = new Card("Jack of Clubs" ,"client/Assets/JPEG/JC.jpg",2, "Question Master");
-    cardArray[16] = new Card("Queen of Clubs","client/Assets/JPEG/QC.jpg",2, "Never Have I Ever ...");
+    cardArray[15] = new Card("Queen of Clubs","client/Assets/JPEG/QC.jpg",2, "Question Master");
+    cardArray[16] = new Card("Jack of Clubs","client/Assets/JPEG/JC.jpg",2, "Never Have I Ever ...");
     cardArray[17] = new Card("Ten of Clubs"  ,"client/Assets/JPEG/10C.jpg",2,"Categories");
     cardArray[18] = new Card("Nine of Clubs" ,"client/Assets/JPEG/9C.jpg",2, "Rhyme");
     cardArray[19] = new Card("Eight of Clubs" ,"client/Assets/JPEG/8C.jpg",2,"Mate");
@@ -94,8 +95,8 @@ function cardSetup(){
     //HEARTS
     cardArray[26] = new Card("Ace of Hearts"  ,"client/Assets/JPEG/AH.jpg",3, "Waterfall");
     cardArray[27] = new Card("King of Hearts" ,"client/Assets/JPEG/KH.jpg",3, "Make a Rule");
-    cardArray[28] = new Card("Jack of Hearts" ,"client/Assets/JPEG/JH.jpg",3, "Question Master");
-    cardArray[29] = new Card("Queen of Hearts","client/Assets/JPEG/QH.jpg",3, "Never Have I Ever ...");
+    cardArray[28] = new Card("Jack of Hearts" ,"client/Assets/JPEG/JH.jpg",3, "Never Have I Ever ...");
+    cardArray[29] = new Card("Queen of Hearts","client/Assets/JPEG/QH.jpg",3, "Question Master");
     cardArray[30] = new Card("Ten of Hearts"  ,"client/Assets/JPEG/10H.jpg",3,"Categories");
     cardArray[31] = new Card("Nine of Hearts" ,"client/Assets/JPEG/9H.jpg",3, "Rhyme");
     cardArray[32] = new Card("Eight of Hearts" ,"client/Assets/JPEG/8H.jpg",3,"Mate");
@@ -109,8 +110,8 @@ function cardSetup(){
     //DIAMONDS
     cardArray[39] = new Card("Ace of Diamonds"  ,"client/Assets/JPEG/AD.jpg", 4,"Waterfall");
     cardArray[40] = new Card("King of Diamonds" ,"client/Assets/JPEG/KD.jpg", 4,"Make a Rule");
-    cardArray[41] = new Card("Jack of Diamonds" ,"client/Assets/JPEG/JD.jpg", 4,"Question Master");
-    cardArray[42] = new Card("Queen of Diamonds","client/Assets/JPEG/QD.jpg", 4,"Never Have I Ever ...");
+    cardArray[41] = new Card("Jack of Diamonds" ,"client/Assets/JPEG/JD.jpg", 4,"Never Have I Ever ...");
+    cardArray[42] = new Card("Queen of Diamonds","client/Assets/JPEG/QD.jpg", 4,"Question Master");
     cardArray[43] = new Card("Ten of Diamonds"  ,"client/Assets/JPEG/10D.jpg",4,"Categories");
     cardArray[44] = new Card("Nine of Diamonds" ,"client/Assets/JPEG/9D.jpg", 4,"Rhyme");
     cardArray[45] = new Card("Eight of Diamonds" ,"client/Assets/JPEG/8D.jpg",4,"Mate");
@@ -214,7 +215,12 @@ function evaluateLoss(name)
     {
         closeToPop = 15;
         circleBroke = 1;
-        console.log('Circle Broke');
+        if (circleBreaker == "")
+        {
+            circleBreaker = name;
+            console.log('Circle Broke' + circleBreaker);
+        }
+     
     }
 
 }
@@ -304,6 +310,20 @@ setInterval(function(){
             socket.emit('Start',{name:socket.player.id});
         }
 
+        /*
+        if (socket.disconnected)
+        {
+            for (var l in playerArray)
+            {
+                if (socket.player.id == playerArray[l].id)
+                {
+                    console.log("SOCKET DISCONNECTED" + playerArray[l].id);
+                    playerArray.splice(l,1);
+
+                }
+            }
+        }
+*/
         if (socket.player.isTurn && UpdateTurnFlag){
             WhosTurn = socket.player.id;
             socket.emit('Pass_Call',{data:0});
@@ -331,11 +351,11 @@ setInterval(function(){
             //console.log("Updating Card with the " + deck[currIndex].name + deck[currIndex].value  ) ;
             if (newCardFlag)
             {
-                socket.emit('UpdateCard',{data:deck[currIndex].image, card:deck[currIndex].name,desc:deck[currIndex].value, count:closeToPop, turn:WhosTurn });
+                socket.emit('UpdateCard',{data:deck[currIndex].image, card:deck[currIndex].name,desc:deck[currIndex].value, count:closeToPop, turn:WhosTurn, breaker:circleBreaker });
             }
             if (newCardFlag == 0)
             {
-                socket.emit('UpdateCard',{data:"client/Assets/JPEG/Green_back.jpg", card:"?????", desc:"?????", count:closeToPop, turn:WhosTurn});
+                socket.emit('UpdateCard',{data:"client/Assets/JPEG/Green_back.jpg", card:"?????", desc:"?????", count:closeToPop, turn:WhosTurn, breaker:circleBreaker});
             }
 
         }
