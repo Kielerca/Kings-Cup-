@@ -23,7 +23,7 @@
     
     
 
-      <!-- The Services Section -->
+      <!-- The main Section -->
       <div  id="colour" >
         <div class="w3-container w3-content w3-padding-64 w3-center" style="max-width:800px" id="Main">
           <h1 class="w3-wide w3-center" style="color:white" id="Turn">Welcome to Captain's Cup</h1>
@@ -62,6 +62,9 @@
            
           </div>
         </div>
+          <div class="w3-row-padding w3-padding-32 w3-center" style="margin:0 -16px" id="bottom">
+            <button class="w3-button w3-opacity w3-margin-bottom" onclick="buttonFix()"  id=btnCan>Buttons Not Working? Click me!</button>
+          </div>
       </div>
       
     <!-- End Page Content -->
@@ -130,7 +133,14 @@
 
         
     }
+    function buttonFix(){
 
+      element = document.getElementById("btnDraw");
+      element.disabled = false; 
+      element = document.getElementById("btnDraw1");
+      element.disabled = false;
+
+    }
 
 
 
@@ -223,8 +233,8 @@
         else if (dataVar.count == 15 && (!circleBrokeFlag))
         {
           element = document.getElementById("Turn");
-          element.innerHTML =  dataVar.turn  + " Just Broke the Circle!" ;
-          alert(dataVar.turn  + " Just Broke the Circle!");
+          element.innerHTML =  dataVar.breaker  + " Just Broke the Circle!" ;
+          alert(dataVar.breaker + " Just Broke the Circle!");
           circleBrokeFlag = 1; 
         }
         else
